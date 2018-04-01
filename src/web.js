@@ -15,7 +15,7 @@ app.post('/webhook', function (req, res) {
   var search = req.body.queryResult.parameters;
 
   var API_KEY = 'ab82760e50ec15b32856658ebb4f51cd';
-  var API_URL = `http://api.openweathermap.org/data/2.5/forecast?&units=metric&lang=pt&appid=${API_KEY}`;
+  var API_URL = `http://api.openweathermap.org/data/2.5/forecast?&units=metric?cnt=3&lang=pt&appid=${API_KEY}`;
   var reqUrl = `${API_URL}&q=${search['geo-city']}`;
 
   http.get(reqUrl, (responseFromAPI) => {
@@ -25,9 +25,9 @@ app.post('/webhook', function (req, res) {
       let weather = JSON.parse(chunk);
 
       let dataToSend = `
-      Tempo para ${weather.city.name} em 6 horas : ${weather.list[1].weather[0].description}
-      Temperatura : ${weather.list[1].main.temp}
-      Humidade: ${weather.list[1].main.humidity}
+Tempo para ${weather.city.name} em 6 horas : ${weather.list[1].weather[0].description}
+Temperatura : ${weather.list[1].main.temp}
+Humidade: ${weather.list[1].main.humidity}
       `;
 
       return res.json({
