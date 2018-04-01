@@ -13,9 +13,10 @@ app.use(bodyParser.json());
 
 app.post('/webhook', function (req, res) {
   var search = req.body.queryResult.parameters;
+
   var API_KEY = 'ab82760e50ec15b32856658ebb4f51cd';
   var API_URL = `http://api.openweathermap.org/data/2.5/forecast?&units=metric&lang=pt&appid=${API_KEY}`;
-  var reqUrl = `${API_URL}&q=${search.location['geo-city']}`;
+  var reqUrl = `${API_URL}&q=${search['geo-city']}`;
 
   http.get(reqUrl, (responseFromAPI) => {
 

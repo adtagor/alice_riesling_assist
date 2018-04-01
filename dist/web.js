@@ -15,15 +15,19 @@ app.use(bodyParser.json());
 
 app.post('/webhook', function (req, res) {
   var search = req.body.queryResult.parameters;
+  console.log(search['geo-city']);
+
   var API_KEY = 'ab82760e50ec15b32856658ebb4f51cd';
   var API_URL = 'http://api.openweathermap.org/data/2.5/forecast?&units=metric&lang=pt&appid=' + API_KEY;
-  var reqUrl = API_URL + '&q=' + search.location['admin-area'];
+  var reqUrl = API_URL + '&q=' + search['geo-city'];
+  console.log(reqUrl);
 
   http.get(reqUrl, function (responseFromAPI) {
 
     responseFromAPI.on('data', function (chunk) {
 
       var weather = JSON.parse(chunk);
+      console.log('b', weather);
 
       var dataToSend = '\n      Tempo para ' + weather.city.name + ' em 6 horas : ' + weather.list[1].weather[0].description + '\n      Temperatura : ' + weather.list[1].main.temp + '\n      Humidade: ' + weather.list[1].main.humidity + '\n      ';
 
