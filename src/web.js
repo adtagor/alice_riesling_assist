@@ -11,25 +11,23 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-
-
-app.post('/weather', function (req, res) {
-  console.log(req.body.result);
-
-
-  //let search = req.body.result && req.body.result.parameters && req.body.result.parameters.weather ? req.body.result.parameters.weather;
-  var city = `Rio de Janeiro`;
+app.post('/webhook', function (req, res) {
+  var search = req.body.queryResult.parameters;
   var API_KEY = 'ab82760e50ec15b32856658ebb4f51cd';
-  var API_URL = `https://lffotoapp.herokuapp.com/http://api.openweathermap.org/data/2.5/forecast?&appid=${API_KEY}`;
-  var reqUrl = `${API_URL}&q=${city},br`;
+  var API_URL = `http://api.openweathermap.org/data/2.5/forecast?&units=metric&lang=pt&appid=${API_KEY}`;
+  var reqUrl = `${API_URL}&q=${search.location['admin-area']}`;
 
   http.get(reqUrl, (responseFromAPI) => {
 
     responseFromAPI.on('data', function (chunk) {
-      let weather = JSON.parse(chunk)['data'];
-      console.log(weather);
 
-      let dataToSend = `Teste`;
+      let weather = JSON.parse(chunk);
+
+      let dataToSend = `
+      Tempo para ${weather.city.name} em 6 horas : ${weather.list[1].weather[0].description}
+      Temperatura : ${weather.list[1].main.temp}
+      Humidade: ${weather.list[1].main.humidity}
+      `;
 
       return res.json({
         speech: dataToSend,

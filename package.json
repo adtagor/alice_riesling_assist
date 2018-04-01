@@ -8,7 +8,7 @@
     "start": "babel-node ./src/index.js",
     "build": "./node_modules/.bin/webpack --mode production --optimize-minimize",
     "dev": "./node_modules/.bin/webpack --mode development",
-    "go": "npm run dev && npm run start"
+    "go": "npm run postinstall && npm start"
   },
   "repository": {
     "type": "git",
