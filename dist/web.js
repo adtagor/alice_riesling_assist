@@ -17,7 +17,7 @@ app.post('/webhook', function (req, res) {
   var search = req.body.queryResult.parameters;
 
   var API_KEY = 'ab82760e50ec15b32856658ebb4f51cd';
-  var API_URL = 'http://api.openweathermap.org/data/2.5/forecast?&units=metric&lang=pt&appid=' + API_KEY;
+  var API_URL = 'http://api.openweathermap.org/data/2.5/forecast?&units=metric?cnt=2&lang=pt&appid=' + API_KEY;
   var reqUrl = API_URL + '&q=' + search['geo-city'];
 
   http.get(reqUrl, function (responseFromAPI) {
@@ -26,12 +26,16 @@ app.post('/webhook', function (req, res) {
 
       var weather = JSON.parse(chunk);
 
-      var dataToSend = '\nTempo para ' + weather.city.name + ' em 6 horas : ' + weather.list[1].weather[0].description + '\nTemperatura : ' + weather.list[1].main.temp + '\nHumidade: ' + weather.list[1].main.humidity + '\n      ';
+      var dataToSend = 'Tempo para ' + weather.city.name + ' em 6 horas : ' + weather.list[1].weather[0].description + '\nTemperatura : ' + weather.list[1].main.temp + '\nHumidade: ' + weather.list[1].main.humidity + '\n';
 
       return res.json({
-        speech: dataToSend,
-        displayText: dataToSend,
-        source: 'weather'
+        "fulfillmentText": dataToSend,
+        "fulfillmentMessages": [{
+          "text": {
+            "text": [dataToSend]
+          }
+        }],
+        "source": "weather"
       });
     });
   }, function (error) {
