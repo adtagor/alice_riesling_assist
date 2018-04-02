@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var http = require('http');
+var { URL } = require('url');
 
 var app = express();
 
@@ -13,22 +14,15 @@ app.use(bodyParser.json());
 
 app.post('/webhook', function (req, res) {
   var search = req.body.queryResult.parameters;
-
-  var API_KEY = 'ab82760e50ec15b32856658ebb4f51cd';
-  var API_URL = `http://api.openweathermap.org/data/2.5/forecast?&units=metric?cnt=2&lang=pt&appid=${API_KEY}`;
-  var reqUrl = `${API_URL}&q=${search['geo-city']}`;
+  var api_url = `http://api.openweathermap.org/data/2.5/forecast?cnt=2&units=metric&lang=pt&appid=${process.env.WEATHER_API}`;
+  var reqUrl = new URL(`${api_url}&q=${search['geo-city']}`);
 
   http.get(reqUrl, (responseFromAPI) => {
-
     responseFromAPI.on('data', function (chunk) {
-
       let weather = JSON.parse(chunk);
-
-      let dataToSend =
-`Tempo para ${weather.city.name} em 6 horas : ${weather.list[1].weather[0].description}
-Temperatura : ${weather.list[1].main.temp}
-Humidade: ${weather.list[1].main.humidity}
-`;
+      let dataToSend = weather.cod === '200' ?
+        `Tempo para ${weather.city.name} em 6 horas : ${weather.list[1].weather[0].description}, temperatura : ${weather.list[1].main.temp} °C, humidade: ${weather.list[1].main.humidity}%`
+        : 'Não consegui entender a cidade, pode especificar melhor ?';
 
       return res.json({
         "fulfillmentText": dataToSend
@@ -47,9 +41,17 @@ Humidade: ${weather.list[1].main.humidity}
     });
   }, (error) => {
     return res.json({
-      speech: 'Something went wrong!',
-      displayText: 'Something went wrong!',
-      source: 'weather'
+      "fulfillmentText": 'Não consegui entender a cidade, pode especificar melhor ?'
+      , "fulfillmentMessages": [
+        {
+          "text": {
+            "text": [
+              'Não consegui entender a cidade, pode especificar melhor ?'
+            ]
+          }
+        }
+      ]
+      , "source": "weather"
     });
   });
 });
